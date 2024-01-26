@@ -35,25 +35,18 @@ class PostDetailView(DetailView):
     template_name = 'blog/detail.html'
     pk_url_kwarg = 'post_id'
 
-    def get_object(self, queryset=None):
-        post_obj = get_object_or_404(
-            self.model,
-            pk=self.kwargs.get(self.pk_url_kwarg)
+    def get_queryset(self):
+        return get_filter_posts(
+            need_filter=get_object_or_404(
+                self.model,
+                pk=self.kwargs.get(self.pk_url_kwarg)
+            ).author != self.request.user
         )
-        if post_obj.author != self.request.user:
-            post_obj = get_filter_posts(
-                self.model.objects,
-                self.kwargs.get(self.pk_url_kwarg),
-            )
-        return post_obj
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return dict(
-            context,
-            form=CommentForm(),
-            comments=self.object.comments.select_related('author')
-        )
+        return dict(super().get_context_data(**kwargs),
+                    form=CommentForm(),
+                    comments=self.object.comments.select_related('author'))
 
 
 class PostUpdateView(PostMixinView, UpdateView):
@@ -69,8 +62,8 @@ class PostDeleteView(PostMixinView, DeleteView):
     """Удаление поста"""
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return dict(context, form=PostForm(instance=self.object))
+        return dict(super().get_context_data(**kwargs),
+                    form=PostForm(instance=self.object))
 
     def get_success_url(self):
         return reverse('blog:profile', args=[self.request.user.username])
@@ -98,11 +91,11 @@ class CategoryPostListView(PostListView):
         )
 
     def get_queryset(self):
-        return get_filter_posts(self.get_category().posts.all())
+        return get_filter_posts(posts=self.get_category().posts.all())
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return dict(context, category=self.get_category())
+        return dict(super().get_context_data(**kwargs),
+                    category=self.get_category())
 
 
 class UserListView(PostListView):
@@ -118,13 +111,13 @@ class UserListView(PostListView):
 
     def get_queryset(self):
         return get_filter_posts(
-            self.get_author().posts,
-            filter_posts=self.get_author() != self.request.user
+            posts=self.get_author().posts,
+            need_filter=self.get_author() != self.request.user
         )
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return dict(context, profile=self.get_author())
+        return dict(super().get_context_data(**kwargs),
+                    profile=self.get_author())
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
@@ -143,7 +136,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
 @login_required
 def add_comment(request, post_id):
-    post_obj = get_filter_posts(post_id=post_id)
+    post_obj = get_object_or_404(Post, pk=post_id)
     form = CommentForm(request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
