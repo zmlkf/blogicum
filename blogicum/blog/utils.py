@@ -4,7 +4,7 @@ from django.utils import timezone
 from .models import Post
 
 
-def get_filter_posts(posts=Post.objects, need_filter=True):
+def get_filtered_posts(posts=Post.objects, need_filter=True):
     posts = (
         posts.select_related(
             'category',

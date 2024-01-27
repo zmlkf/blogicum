@@ -8,7 +8,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from .forms import CommentForm, PostForm
 from .mixins import CommentMixinView, PostMixinView
 from .models import Category, Post, User
-from .utils import get_filter_posts
+from .utils import get_filtered_posts
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -36,7 +36,7 @@ class PostDetailView(DetailView):
     pk_url_kwarg = 'post_id'
 
     def get_queryset(self):
-        return get_filter_posts(
+        return get_filtered_posts(
             need_filter=get_object_or_404(
                 self.model,
                 pk=self.kwargs.get(self.pk_url_kwarg)
@@ -44,9 +44,11 @@ class PostDetailView(DetailView):
         )
 
     def get_context_data(self, **kwargs):
-        return dict(super().get_context_data(**kwargs),
-                    form=CommentForm(),
-                    comments=self.object.comments.select_related('author'))
+        return dict(
+            **super().get_context_data(**kwargs),
+            form=CommentForm(),
+            comments=self.object.comments.select_related('author')
+        )
 
 
 class PostUpdateView(PostMixinView, UpdateView):
@@ -62,8 +64,10 @@ class PostDeleteView(PostMixinView, DeleteView):
     """Удаление поста"""
 
     def get_context_data(self, **kwargs):
-        return dict(super().get_context_data(**kwargs),
-                    form=PostForm(instance=self.object))
+        return dict(
+            **super().get_context_data(**kwargs),
+            form=PostForm(instance=self.object)
+        )
 
     def get_success_url(self):
         return reverse('blog:profile', args=[self.request.user.username])
@@ -74,7 +78,7 @@ class PostListView(ListView):
 
     model = Post
     template_name = 'blog/index.html'
-    queryset = get_filter_posts()
+    queryset = get_filtered_posts()
     paginate_by = DEFAULT_PAGE_SIZE
 
 
@@ -91,11 +95,13 @@ class CategoryPostListView(PostListView):
         )
 
     def get_queryset(self):
-        return get_filter_posts(posts=self.get_category().posts.all())
+        return get_filtered_posts(posts=self.get_category().posts.all())
 
     def get_context_data(self, **kwargs):
-        return dict(super().get_context_data(**kwargs),
-                    category=self.get_category())
+        return dict(
+            **super().get_context_data(**kwargs),
+            category=self.get_category()
+        )
 
 
 class UserListView(PostListView):
@@ -110,14 +116,16 @@ class UserListView(PostListView):
         )
 
     def get_queryset(self):
-        return get_filter_posts(
+        return get_filtered_posts(
             posts=self.get_author().posts,
             need_filter=self.get_author() != self.request.user
         )
 
     def get_context_data(self, **kwargs):
-        return dict(super().get_context_data(**kwargs),
-                    profile=self.get_author())
+        return dict(
+            **super().get_context_data(**kwargs),
+            profile=self.get_author()
+        )
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
