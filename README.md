@@ -56,5 +56,3 @@ Blogicum is a website where users can read a feed of posts. It allows user regis
 ## Author
 
 Roman Zemliakov ([GitHub](https://github.com/zmlkf))
-
-```
