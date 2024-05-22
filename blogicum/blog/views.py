@@ -14,7 +14,7 @@ DEFAULT_PAGE_SIZE = 10
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
-    """Создание поста."""
+    """Create a post."""
 
     model = Post
     form_class = PostForm
@@ -29,7 +29,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 
 class PostDetailView(DetailView):
-    """Страница запрашиваемого поста"""
+    """Page of the requested post"""
 
     model = Post
     template_name = 'blog/detail.html'
@@ -44,15 +44,15 @@ class PostDetailView(DetailView):
         )
 
     def get_context_data(self, **kwargs):
-        return dict(
+        return {
             **super().get_context_data(**kwargs),
-            form=CommentForm(),
-            comments=self.object.comments.select_related('author')
-        )
+            'form': CommentForm(),
+            'comments': self.object.comments.select_related('author')
+        }
 
 
 class PostUpdateView(PostMixinView, UpdateView):
-    """Редактирование поста"""
+    """Edit a post"""
 
     form_class = PostForm
 
@@ -61,20 +61,20 @@ class PostUpdateView(PostMixinView, UpdateView):
 
 
 class PostDeleteView(PostMixinView, DeleteView):
-    """Удаление поста"""
+    """Delete a post"""
 
     def get_context_data(self, **kwargs):
-        return dict(
+        return {
             **super().get_context_data(**kwargs),
-            form=PostForm(instance=self.object)
-        )
+            'form': PostForm(instance=self.object)
+        }
 
     def get_success_url(self):
         return reverse('blog:profile', args=[self.request.user.username])
 
 
 class PostListView(ListView):
-    """Список постов на главной странице"""
+    """List of posts on the main page"""
 
     model = Post
     template_name = 'blog/index.html'
@@ -83,7 +83,7 @@ class PostListView(ListView):
 
 
 class CategoryPostListView(PostListView):
-    """Список постов в запрошенной категории"""
+    """List of posts in the requested category"""
 
     template_name = 'blog/category.html'
 
@@ -98,14 +98,14 @@ class CategoryPostListView(PostListView):
         return get_filtered_posts(posts=self.get_category().posts.all())
 
     def get_context_data(self, **kwargs):
-        return dict(
+        return {
             **super().get_context_data(**kwargs),
-            category=self.get_category()
-        )
+            'category': self.get_category()
+        }
 
 
 class UserListView(PostListView):
-    """Профиль пользоателя со списком его постов"""
+    """User profile with a list of their posts"""
 
     template_name = "blog/profile.html"
 
@@ -122,14 +122,14 @@ class UserListView(PostListView):
         )
 
     def get_context_data(self, **kwargs):
-        return dict(
+        return {
             **super().get_context_data(**kwargs),
-            profile=self.get_author()
-        )
+            'profile': self.get_author()
+        }
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-    """Редактирование профиля"""
+    """Edit profile"""
 
     model = User
     fields = ('first_name', 'last_name', 'username', 'email')
@@ -155,12 +155,12 @@ def add_comment(request, post_id):
 
 
 class CommentUpdateView(CommentMixinView, UpdateView):
-    """Редактирование комментария"""
+    """Edit a comment"""
 
     form_class = CommentForm
 
 
 class CommentDeleteView(CommentMixinView, DeleteView):
-    """Удаление комментария"""
+    """Delete a comment"""
 
     pass

@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 
 from .models import Category, Comment, Location, Post
 
-admin.site.empty_value_display = 'Не задано'
+admin.site.empty_value_display = 'Not set'
 
 
 class CommentAdmin(admin.TabularInline):
@@ -31,15 +31,15 @@ class PostAdmin(admin.ModelAdmin):
         'post_image'
     )
 
-    @admin.display(description='Текст')
+    @admin.display(description='Text')
     def short_text_field(self, post):
         return post.text[:50]
 
-    @admin.display(description='Комментарии')
+    @admin.display(description='Comments')
     def comment_count(self, obj):
         return obj.comments.count()
 
-    @admin.display(description='Изображение')
+    @admin.display(description='Image')
     def post_image(self, obj):
         if obj.image:
             return mark_safe(f'<img src="{obj.image.url}" width=50')
@@ -68,9 +68,9 @@ class CategoryAdmin(admin.ModelAdmin):
         'is_published'
     )
 
-    @admin.display(description='Описание')
+    @admin.display(description='Description')
     def short_description_field(self, description):
-        # Ограничиваем количество символов текста
+        # Limiting the number of characters in the text
         return description.description[:50]
 
     list_editable = ('is_published',)

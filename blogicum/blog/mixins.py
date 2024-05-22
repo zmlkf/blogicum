@@ -6,7 +6,7 @@ from .models import Comment, Post
 
 
 class CommentMixinView(LoginRequiredMixin):
-    """Редактирование или удаление комментария"""
+    """Editing or deleting a comment"""
 
     model = Comment
     template_name = 'blog/comment.html'
@@ -25,7 +25,7 @@ class CommentMixinView(LoginRequiredMixin):
 
 
 class PostMixinView(LoginRequiredMixin):
-    """Редактирование или удаление поста"""
+    """Editing or deleting a post"""
 
     model = Post
     template_name = 'blog/create.html'
