@@ -7,13 +7,13 @@ Blogicum is a website where users can read a feed of posts. It allows user regis
 1. Clone the project repository:
 
    ```bash
-   git clone git@github.com:zmlkf/django_sprint4.git
+   git clone git@github.com:zmlkf/blogicum.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd django_sprint4
+   cd blogicum
    ```
 
 3. Install the required dependencies:
@@ -44,8 +44,19 @@ Blogicum is a website where users can read a feed of posts. It allows user regis
 
 4. Access the project locally through [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
+## Technologies Used
+
+- Django: a Python web framework.
+- HTML/CSS: markup and styling languages for creating the user interface.
+- JavaScript: programming language for interactive elements on web pages.
+- SQLite: lightweight relational database used in Django for data storage.
+- Git: version control system, used for managing project code and versioning.
+- GitHub: platform for hosting projects using the Git version control system.
+
 ## Author
 
 Roman Zemliakov ([GitHub](https://github.com/zmlkf))
 
 ```
+
+Просто скопируйте этот текст и вставьте его в файл README в вашем проекте.
